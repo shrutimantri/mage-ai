@@ -262,6 +262,7 @@
                 "streaming/sources/amazon-sqs",
                 "streaming/sources/azure-event-hub",
                 "streaming/sources/google-cloud-pubsub",
+                "streaming/sources/influxdb",
                 "streaming/sources/kafka",
                 "streaming/sources/kinesis"
               ]
@@ -317,6 +318,7 @@
                 "development/dependencies/custom-files"
               ]
             },
+            "development/io_config",
             {
               "group": "Storage",
               "pages": [
@@ -444,7 +446,8 @@
       "icon": "info",
       "pages": [
         "about/code-of-conduct",
-        "about/statistics"
+        "about/statistics",
+        "about/frequently-asked-questions"
       ]
     },
     {
@@ -489,6 +492,7 @@
           ]
         },
         "guides/ai/overview",
+        "guides/docker/connecting-a-database",
         "guides/community-examples",
         "guides/tips-and-tricks"
       ]
@@ -696,8 +700,9 @@
           "group": "Version control",
           "icon": "code-branch",
           "pages": [
-            "production/data-sync/git",
-            "production/data-sync/github"
+            "production/data-sync/git-sync",
+            "production/data-sync/github",
+            "production/data-sync/git-integration"
           ]
         }
       ]

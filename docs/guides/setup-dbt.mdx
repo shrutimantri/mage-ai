@@ -30,6 +30,7 @@ git clone https://github.com/mage-ai/dbt-quickstart mage-dbt-quickstart \
 && docker compose up
 ```
 
+<<<<<<< HEAD
 ```bash Windows
 git clone https://github.com/mage-ai/dbt-quickstart mage-dbt-quickstart 
 cd mage-dbt-quickstart
@@ -40,6 +41,16 @@ docker compose up
 </CodeGroup>
 
 After running the above command, you'll see the Mage overview page. Click the pipelines icon on the left to enter the pipelines overview.
+=======
+   ```bash
+   cd demo_project/dbt
+   dbt init -s demo
+   touch demo/profiles.yml
+   ```
+
+   For more information on creating a dbt project, read their
+   [documentation](https://docs.getdbt.com/reference/commands/init).
+>>>>>>> master
 
 ![Open Pipelines](/media/setup-dbt/go-to-pipelines.gif)
 
@@ -98,6 +109,134 @@ To run this pipeline, click the name of the pipeline to open the _Triggers_ page
 
 Now, in addition to pulling the external Jaffle Shop demo and writing the necessary profiles, you'll perform [`dbt build`](https://docs.getdbt.com/reference/commands/build), which will: run models, test tests, snapshot snapshots, and seed seeds. 🥳
 
+<<<<<<< HEAD
 To see the output, you can use a querying tool (like DataGrip or psql) to the locally hosted Postgres database. To learn more about the Jaffle Shop demo, [check out the repo](https://github.com/dbt-labs/jaffle_shop).
 </Accordion>
 </AccordionGroup>
+=======
+   SELECT *
+   FROM source_data
+   ```
+
+3. Run the dbt model block by pressing the play button on the top right of the
+   block or by pressing `Command` + `Enter`.
+4. You should see a preview of the query execution logs. To see the query results,
+   click the `Expand table` link at the bottom right corner.
+
+![](https://github.com/mage-ai/assets/blob/main/dbt/dbt-preview.gif?raw=true)
+
+5. After previewing the results, in the top right corner of the block,
+   click on the triple dots to reveal a dropdown menu.
+6. Under the dropdown menu, click the option <b>Run model</b>. This command
+   will execute the `dbt run` command and create the table in your data source.
+
+![](https://github.com/mage-ai/assets/blob/main/dbt/run-model.png?raw=true)
+
+### 6b. Edit dbt model `my_second_dbt_model`
+
+1. In the dbt block named `my_second_dbt_model`, next to the label
+   `Target` at the top, choose `dev` in the dropdown list.  You can also
+   check `Manually enter target`, and enter `dev` in the input field.
+2. Paste the following SQL into the dbt model named `my_second_dbt_model`:
+
+   ```sql
+   SELECT
+       a.*
+       , b.*
+   FROM {{ ref('my_first_dbt_model') }} AS a
+
+   LEFT JOIN {{ source('mage_demo', 'dbt_demo_pipeline_load_data') }} AS b
+   ON 1 = 1
+
+   WHERE a.id = 1
+   ```
+
+   > [dbt sources](https://docs.getdbt.com/docs/build/sources)
+   >
+   > When a dbt model depends on an upstream block that isn’t a dbt model, a
+   > source for that block is automatically added to the
+   > `demo_project/dbt/demo/models/mage_sources.yml` file.
+   >
+   > Read more about dbt sources in their
+   > [documentation](https://docs.getdbt.com/docs/build/sources).
+
+3. Run the dbt model block by pressing the play button on the top right of the
+   block or by pressing `Command` + `Enter`.
+4. You should see a preview of the query execution logs. To see the query results,
+   click the `Expand table` link at the bottom right corner.
+
+---
+
+## 7. Add test for dbt model
+
+1. On the right side of the screen, click the tab labeled **`Terminal`**.
+2. Create a new dbt test file by running the following command:
+   ```bash
+   touch demo_project/dbt/demo/tests/test_my_second_dbt_model.sql
+   ```
+3. On the left side of the page in the file browser, expand the folder
+   `demo_project/dbt/demo/tests/` and click the file named
+   `test_my_second_dbt_model.sql`. If you don’t see it, refresh the page.
+4. Paste the following SQL in the file:
+   ```sql
+   SELECT id
+   FROM {{ ref('my_second_dbt_model') }}
+   GROUP BY id
+   HAVING (id = 0)
+   ```
+5. Read more about dbt tests in their
+   [documentation](https://docs.getdbt.com/docs/build/tests).
+
+---
+
+## 8. Execute pipeline end-to-end
+
+1.  Click the name of the pipeline in the header breadcrumbs to go back to the
+    detail page.
+2.  Create a new trigger with a type `Schedule` and a Frequency `once`.
+    For more details, follow these
+    [steps](/design/data-pipeline-management#create-trigger).
+3.  After your trigger is created, click the **`Start trigger`** button at the
+    top of the page.
+4.  The pipeline will eventually fail because a dbt test failed. This means
+    everything is working as expected.
+5.  Open the file `demo_project/dbt/demo/models/example/schema.yml` and remove
+    the tests named `unique` under both models. Your file should look like this:
+
+    ```yaml 
+
+    version: 2
+
+    models:
+      - name: my_first_dbt_model
+        description: "A starter dbt model"
+        columns:
+          - name: id
+            description: "The primary key for this table"
+            tests:
+              - not_null
+
+      - name: my_second_dbt_model
+        description: "A starter dbt model"
+        columns:
+          - name: id
+            description: "The primary key for this table"
+            tests:
+              - not_null
+
+    ```
+
+6.  Click on the **`Failed`** button next to the pipeline run and click
+    **`Retry run`**. It should complete running successfully after a few
+    minutes.
+
+Congratulations! You’ve created a data pipeline that orchestrates your dbt
+models.
+
+---
+
+## Support
+
+If you get stuck, run into problems, or just want someone to walk you through
+these steps, please join our [Slack](https://www.mage.ai/chat).
+>>>>>>> master
