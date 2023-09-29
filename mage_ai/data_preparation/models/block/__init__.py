@@ -71,8 +71,8 @@ from mage_ai.services.spark.config import SparkConfig
 from mage_ai.services.spark.spark import get_spark_session
 from mage_ai.settings.repo import get_repo_path
 from mage_ai.shared.constants import ENV_DEV, ENV_TEST
-from mage_ai.shared.environments import get_env
-from mage_ai.shared.hash import extract, merge_dict
+from mage_ai.shared.environments import get_env, is_debug
+from mage_ai.shared.hash import extract, ignore_keys, merge_dict
 from mage_ai.shared.logger import BlockFunctionExec
 from mage_ai.shared.parsers import encode_complex
 from mage_ai.shared.strings import format_enum
@@ -381,6 +381,8 @@ class Block(DataIntegrationMixin):
 
     async def metadata_async(self) -> Dict:
         if self.is_data_integration():
+            grouped_templates = get_templates(group_templates=True)
+
             if BlockLanguage.YAML == self.language:
                 content = await self.content_async()
                 if content:
@@ -444,7 +446,7 @@ class Block(DataIntegrationMixin):
 
                     settings = yaml.safe_load(text)
                     uuid = settings.get('source') or settings.get('destination')
-                    mapping = get_templates(group_templates=True).get(uuid) or {}
+                    mapping = grouped_templates.get(uuid) or {}
 
                     return dict(
                         data_integration=merge_dict(
@@ -452,6 +454,29 @@ class Block(DataIntegrationMixin):
                             settings,
                         ),
                     )
+            elif BlockLanguage.PYTHON == self.language:
+                try:
+                    di_settings = self.get_data_integration_settings(
+                        data_integration_uuid_only=True,
+                        from_notebook=True,
+                        global_vars=self.pipeline.variables if self.pipeline else None,
+                    )
+                    uuid = di_settings.get('data_integration_uuid')
+                    mapping = grouped_templates.get(uuid) or {}
+
+                    return dict(
+                        data_integration=merge_dict(
+                            extract(mapping or {}, ['name']),
+                            ignore_keys(di_settings or {}, [
+                                'catalog',
+                                'config',
+                                'data_integration_uuid',
+                            ]),
+                        ),
+                    )
+                except Exception as err:
+                    if is_debug():
+                        print(f'[ERROR] Block.metadata_async: {err}')
 
         return {}
 
@@ -1254,20 +1279,34 @@ class Block(DataIntegrationMixin):
             ):
                 from mage_ai.data_preparation.models.block.dbt import DBTBlock
 
-                # project_path and target sets
-                DBTBlock.materialize_df(
-                    df=outputs[0],
-                    pipeline_uuid=self.pipeline.uuid,
-                    block_uuid=self.uuid,
-                    targets=list(set(
-                        (block.project_path, block.target(variables=global_vars))
-                        for _uuid, block in self.pipeline.blocks_by_uuid.items()
-                        if isinstance(block, DBTBlock)
-                    )),
-                    logger=logger,
-                    global_vars=global_vars_copy,
-                    runtime_arguments=runtime_arguments,
-                )
+                # normalize output
+                output = outputs[0]
+                if isinstance(output, pd.DataFrame):
+                    df = output
+                elif isinstance(output, dict):
+                    df = pd.DataFrame([output])
+                elif isinstance(output, list):
+                    df = pd.DataFrame(output)
+                else:
+                    df = pd.DataFrame()
+
+                if df.empty:
+                    if logger:
+                        logger.info('No data for dbt to materialize.')
+                else:
+                    DBTBlock.materialize_df(
+                        df=df,
+                        pipeline_uuid=self.pipeline.uuid,
+                        block_uuid=self.uuid,
+                        targets=list(set(
+                            (block.project_path, block.target(variables=global_vars))
+                            for _uuid, block in self.pipeline.blocks_by_uuid.items()
+                            if isinstance(block, DBTBlock)
+                        )),
+                        logger=logger,
+                        global_vars=global_vars_copy,
+                        runtime_arguments=runtime_arguments,
+                    )
 
         return dict(output=outputs)
 

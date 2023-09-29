@@ -20,7 +20,7 @@ To enable Git Sync, navigate to the settings page _after_ you've configured your
 <Steps>
     <Step title="Fill out the form">
         <div align="center">
-        <img src="/media/github-url.png" width="50%"/>
+        <img src="https://github.com/mage-ai/assets/blob/main/github-url.png?raw=True" width="50%"/>
         </div>
         - `Authentication type`: Select which kind of authentication to use for the Git Sync
         - `Remote repo url`: Your Github repository's remote url. Use the SSH link or HTTPS link depending on the authentication type.
@@ -50,7 +50,7 @@ To enable Git Sync, navigate to the settings page _after_ you've configured your
         <Steps>
         <Step title="Set up your SSH key">
         This will allow your machine to access GitHub. 
-        Check out this sections this [guide](/production/data-sync/git#configure-git-settings) to set up your SSH key.
+        Check out this sections this [guide](/production/data-sync/git-integration#configure-git-in-mage) to set up your SSH key.
         </Step>
         <Step title="Fill out the remaining fields.">
         Filling out these fields will allow Mage to recreate your git and SSH settings if they are deleted (i.e. if your container restarts):
@@ -97,15 +97,16 @@ variables to configure your Git repo.
 
 | Setting                              | Variable                       | Description                                                                                    | Required |
 |--------------------------------------|--------------------------------|------------------------------------------------------------------------------------------------|----------|
-| Git settings                         | `GIT_REPO_LINK`              |  corresponds to `Remote repo url`                                                              | ✅        |
-| Git settings                         | `GIT_REPO_PATH`              |  corresponds to `Local directory path`                                                         | ✅        |
-| Git settings                         | `GIT_USERNAME`               |  corresponds to `Username`                                                                     | ✅        |
-| Git settings                         | `GIT_EMAIL`                  |  corresponds to `Email`                                                                        | ✅        |
-| Git settings                         | `GIT_AUTH_TYPE`              |  Authentication type, options                                                                  | ✅        |
-| Git sync settings                    | `GIT_BRANCH`                 |  corresponds to `Branch name`                                                                  | 🚫        |
-| Git sync settings                    | `GIT_SYNC_ON_PIPELINE_RUN`   |  corresponds to `Sync before each trigger run`, options                                        | 🚫        |
-| Git sync settings                    | `GIT_SYNC_ON_START`          |  corresponds to `Sync on server start up`, options                                             | 🚫        |
-| Git sync settings                    | `GIT_SYNC_ON_EXECUTOR_START` |  If set to "1", Mage will attempt to run a git sync every time an executor is started, options | 🚫        |
-| Authentication environment variables | `GIT_SSH_PUBLIC_KEY`         |  SSH public key encoded in base64, used for ssh auth type                                      | 🚫        |
-| Authentication environment variables | `GIT_SSH_PRIVATE_KEY`        |  SSH private key encoded in base64, used for ssh auth type                                     | 🚫        |
-| Authentication environment variables | `GIT_ACCESS_TOKEN`           |  Git access token, used for https auth type                                                    | 🚫        |
+| Git settings                         | `GIT_REPO_LINK`                |  corresponds to `Remote repo url`                                                              | ✅       |
+| Git settings                         | `GIT_REPO_PATH`                |  corresponds to `Local directory path`                                                         | ✅       |
+| Git settings                         | `GIT_USERNAME`                 |  corresponds to `Username`                                                                     | ✅       |
+| Git settings                         | `GIT_EMAIL`                    |  corresponds to `Email`                                                                        | ✅       |
+| Git settings                         | `GIT_AUTH_TYPE`                |  Authentication type, options                                                                  | ✅       |
+| Git sync settings                    | `GIT_BRANCH`                   |  corresponds to `Branch name`                                                                  | 🚫       |
+| Git sync settings                    | `GIT_SYNC_ON_PIPELINE_RUN`     |  corresponds to `Sync before each trigger run`, options                                        | 🚫       |
+| Git sync settings                    | `GIT_SYNC_ON_START`            |  corresponds to `Sync on server start up`, options                                             | 🚫       |
+| Git sync settings                    | `GIT_SYNC_ON_EXECUTOR_START`   |  If set to "1", Mage will attempt to run a git sync every time an executor is started, options | 🚫       |
+| Git sync settings                    | `GIT_SYNC_SUBMODULES`          |  corresponds to `Include submodules`, options                                                  | 🚫       |
+| Authentication environment variables | `GIT_SSH_PUBLIC_KEY`           |  SSH public key encoded in base64, used for ssh auth type                                      | 🚫       |
+| Authentication environment variables | `GIT_SSH_PRIVATE_KEY`          |  SSH private key encoded in base64, used for ssh auth type                                     | 🚫       |
+| Authentication environment variables | `GIT_ACCESS_TOKEN`             |  Git access token, used for https auth type                                                    | 🚫       |
