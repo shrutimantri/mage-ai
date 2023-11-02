@@ -546,7 +546,9 @@ function KernelStatus({
           )}
         </FlexContainer>
 
-        {featureEnabled?.(featureUUIDs.NOTEBOOK_BLOCK_OUTPUT_SPLIT_VIEW) && (
+        {PipelineTypeEnum.INTEGRATION !== pipeline?.type
+          && featureEnabled?.(featureUUIDs.NOTEBOOK_BLOCK_OUTPUT_SPLIT_VIEW)
+          && (
           <HeaderViewOptionsStyle>
             <FlexContainer alignItems="center">
               <Tooltip
