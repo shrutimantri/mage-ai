@@ -1373,12 +1373,14 @@ function PipelineDetailPage({
 
   const [deleteBlock] = useMutation(
     ({
-      type: blockType,
       extension_uuid: extensionUUID,
+      force,
+      type: blockType,
       uuid,
     }: BlockType) => {
       const query: {
         extension_uuid?: string;
+        force?: boolean;
         block_type?: string;
       } = {};
 
@@ -1387,6 +1389,9 @@ function PipelineDetailPage({
       }
       if (extensionUUID) {
         query.extension_uuid = extensionUUID;
+      }
+      if (typeof force !== 'undefined') {
+        query.force = force;
       }
 
       return api.blocks.pipelines.useDelete(
