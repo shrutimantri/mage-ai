@@ -15,6 +15,8 @@ def load_data_from_druid(*args, **kwargs):
     Template for loading data from a Druid warehouse.
     Specify your configuration settings in 'io_config.yaml'.
 
+    This is test pr.
+    
     Docs: https://docs.mage.ai/design/data-loading#druid
     """
     query = 'your Druid query'  # Specify your SQL query here
